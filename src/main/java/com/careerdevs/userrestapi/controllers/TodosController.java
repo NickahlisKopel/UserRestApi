@@ -1,8 +1,8 @@
 package com.careerdevs.userrestapi.controllers;
 
 
-import com.careerdevs.userrestapi.models.CommentModel;
 import com.careerdevs.userrestapi.models.PostModel;
+import com.careerdevs.userrestapi.models.TodosModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -13,26 +13,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping("/api/post")
-public class PostController {
-
+@RequestMapping("/api/todo")
+public class TodosController {
     @Autowired
     Environment env;
 
-    @GetMapping ("/firstpage")
-    public PostModel[] getFirstPage(RestTemplate restTemplate){
-        String apiKey = env.getProperty("GOREST_TOKEN");
-        String url = "https://gorest.co.in/public/v2/posts" + "?access-token="+apiKey;
-        PostModel[] post = restTemplate.getForObject(url,PostModel[].class);
 
-        return post;
+    @GetMapping ("/firstpage")
+    public TodosModel[] getFirstPage(RestTemplate restTemplate){
+        String apiKey = env.getProperty("GOREST_TOKEN");
+        String url = "https://gorest.co.in/public/v2/todos" + "?access-token="+apiKey;
+        TodosModel[] todos = restTemplate.getForObject(url,TodosModel[].class);
+
+        return todos;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity postHandler (RestTemplate restTemplate, @PathVariable("id") int postId){
+    public ResponseEntity todoHandler (RestTemplate restTemplate, @PathVariable("id") int todoId){
         String apiKey = env.getProperty("GOREST_TOKEN");
         try{
-            PostModel requestData = restTemplate.getForObject("https://gorest.co.in/public/v2/posts/" + postId+"?access-token="+apiKey, PostModel.class);
+            TodosModel requestData = restTemplate.getForObject("https://gorest.co.in/public/v2/todos/" + todoId+"?access-token="+apiKey, TodosModel.class);
             return new ResponseEntity(requestData, HttpStatus.OK);
         }catch(Exception e) {
             System.out.println(e.getClass());
@@ -43,14 +43,14 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deletePost (RestTemplate restTemplate, @PathVariable("id") int postId){
+    public ResponseEntity<Object> deleteTodo (RestTemplate restTemplate, @PathVariable("id") int todoId){
         String apiKey = env.getProperty("GOREST_TOKEN");
         try{
-            String url = "https://gorest.co.in/public/v2/posts/" + postId+"?access-token="+apiKey;
-            PostModel deletedPost = restTemplate.getForObject(url, PostModel.class);
+            String url = "https://gorest.co.in/public/v2/todos/" + todoId+"?access-token="+apiKey;
+            TodosModel deletedTodo= restTemplate.getForObject(url, TodosModel.class);
             restTemplate.delete(url);
 
-            return new ResponseEntity<>(deletedPost,HttpStatus.OK);
+            return new ResponseEntity<>(deletedTodo,HttpStatus.OK);
         }catch(Exception e) {
             System.out.println(e.getClass());
             System.out.println(e.getMessage());
@@ -62,19 +62,19 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> postPost (
+    public ResponseEntity<Object> postTodo (
             RestTemplate restTemplate,
-            @RequestBody PostModel newPost
+            @RequestBody TodosModel newTodo
     )
     {
         String apiKey = env.getProperty("GOREST_TOKEN");
         try{
-            String url = "https://gorest.co.in/public/v2/posts/?access-token="+apiKey;
+            String url = "https://gorest.co.in/public/v2/todos/?access-token="+apiKey;
 
-            HttpEntity<PostModel> request = new HttpEntity<>(newPost);
-            PostModel createPost = restTemplate.postForObject(url, request, PostModel.class);
+            HttpEntity<TodosModel> request = new HttpEntity<>(newTodo);
+           TodosModel createTodo = restTemplate.postForObject(url, request, TodosModel.class);
 
-            return new ResponseEntity<>(createPost,HttpStatus.CREATED);
+            return new ResponseEntity<>(createTodo,HttpStatus.CREATED);
         }catch(Exception e) {
             System.out.println(e.getClass());
             System.out.println(e.getMessage());
@@ -83,23 +83,22 @@ public class PostController {
 
     }
 
-
     @PutMapping
-    public ResponseEntity<Object> putPost(
+    public ResponseEntity<Object> putTodo(
             RestTemplate restTemplate,
-            @RequestBody PostModel updatePost
+            @RequestBody TodosModel updateTodo
     )
     {
         String apiKey = env.getProperty("GOREST_TOKEN");
         try{
-            String url = "https://gorest.co.in/public/v2/posts/"+ updatePost.getId()+"?access-token="+apiKey;
+            String url = "https://gorest.co.in/public/v2/todos/"+ updateTodo.getId()+"?access-token="+apiKey;
 
-            HttpEntity<PostModel> request = new HttpEntity<>(updatePost);
-            ResponseEntity<PostModel> response = restTemplate.exchange(
+            HttpEntity<TodosModel> request = new HttpEntity<>(updateTodo);
+            ResponseEntity<TodosModel> response = restTemplate.exchange(
                     url,
                     HttpMethod.PUT,
                     request,
-                    PostModel.class);
+                    TodosModel.class);
 
             return new ResponseEntity<>(response.getBody(),HttpStatus.CREATED);
         }catch(Exception e) {
@@ -109,6 +108,10 @@ public class PostController {
         }
 
     }
+
+
+
+
 
 
 
